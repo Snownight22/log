@@ -11,11 +11,11 @@
 #include "log_mem.h"
 #include "log_core.h"
 
-stLogCore g_log_core_handler;
+stLogCore *g_log_core_handler;
 
 stLogUnit* log_core_node_get()
 {
-    stLogCore *handler = &g_log_core_handler;
+    stLogCore *handler = g_log_core_handler;
     stLogUnit *node = NULL;
     stListEntry *entry = handler->read_list->first;
     if (NULL == entry)
@@ -41,7 +41,7 @@ stLogUnit* log_core_node_get()
 
 void log_core_node_put(stLogUnit *node)
 {
-    stLogCore *handler = &g_log_core_handler;
+    stLogCore *handler = g_log_core_handler;
     SPIN_LOCK(&(handler->list_lock));
     LIST_INSERT_TAIL(handler->write_list, &(node->entry));
     SPIN_UNLOCK(&(handler->list_lock));
@@ -88,7 +88,7 @@ void log_core_file_oper(char *fileName)
 {
     stFileNode *fileNode;
     stLogConfig *configHandler = log_config_handler_get();
-    stLogCore *handler = &g_log_core_handler;
+    stLogCore *handler = g_log_core_handler;
 
     if (NULL == (fileNode = (stFileNode*) malloc (sizeof(stFileNode))))
     {
@@ -114,7 +114,7 @@ void log_core_file_oper(char *fileName)
 
 FILE* log_core_rolling(FILE *fp, unsigned long logtime)
 {
-    stLogCore *handler = &g_log_core_handler;
+    stLogCore *handler = g_log_core_handler;
     stLogConfig *confighandler = log_config_handler_get();
     char filename[CONFIG_FILE_LENGTH_MAX] = {0};
     char cmd[2*CONFIG_FILE_LENGTH_MAX] = {0};
@@ -188,7 +188,7 @@ FILE* log_core_rolling(FILE *fp, unsigned long logtime)
 
 void* log_core_process(void *arg)
 {
-    stLogCore *handler = &g_log_core_handler;
+    stLogCore *handler = g_log_core_handler;
     stLogConfig *config_handler = log_config_handler_get();
     FILE *fp = NULL;
     stLogUnit *node = NULL;
@@ -225,32 +225,45 @@ void* log_core_process(void *arg)
 
 void log_core_init()
 {
-    log_mem_init(LOG_UNIT_NODE_MAX);
+    if (NULL == g_log_core_handler)
+    {
+        if (NULL == (g_log_core_handler = (stLogCore *)malloc(sizeof(stLogCore))))
+        {
+            fprintf(stderr, "Log Core Handler malloc error\n");
+            return ;
+        }
 
-    stLogCore *corehandler = &g_log_core_handler;
-    LIST_INIT(&(corehandler->list[0]));
-    LIST_INIT(&(corehandler->list[1]));
-    corehandler->read_list = &(corehandler->list[1]);
-    corehandler->write_list = &(corehandler->list[0]);
-    SPIN_LOCK_INIT(&(corehandler->list_lock));
+        log_mem_init(LOG_UNIT_NODE_MAX);
 
-    corehandler->lastTime = 0;
-    corehandler->existfiles = 0;
-    LIST_INIT(&(corehandler->file_list));
+        stLogCore *corehandler = g_log_core_handler;
+        LIST_INIT(&(corehandler->list[0]));
+        LIST_INIT(&(corehandler->list[1]));
+        corehandler->read_list = &(corehandler->list[1]);
+        corehandler->write_list = &(corehandler->list[0]);
+        SPIN_LOCK_INIT(&(corehandler->list_lock));
 
-    corehandler->isAlive = 1;
-    THREAD_CREATE(&(corehandler->thread), NULL, log_core_process, NULL);
+        corehandler->lastTime = 0;
+        corehandler->existfiles = 0;
+        LIST_INIT(&(corehandler->file_list));
+
+        corehandler->isAlive = 1;
+        THREAD_CREATE(&(corehandler->thread), NULL, log_core_process, NULL);
+    }
 }
 
 void log_core_destroy()
 {
-    stLogCore *corehandler = &g_log_core_handler;
-    corehandler->isAlive = 0;
-    THREAD_JOIN(corehandler->thread, NULL);
+    if (NULL != g_log_core_handler)
+    {
+        stLogCore *corehandler = g_log_core_handler;
+        corehandler->isAlive = 0;
+        THREAD_JOIN(corehandler->thread, NULL);
 
-    SPIN_LOCK_DESTROY(&(g_log_core_handler.list_lock));
+        SPIN_LOCK_DESTROY(&(corehandler->list_lock));
 
-    log_mem_destory();
+        log_mem_destory();
+        free(g_log_core_handler);
+    }
 }
 
 
