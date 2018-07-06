@@ -14,7 +14,7 @@ SRC = $(foreach dir,$(SRC_DIR), $(wildcard $(dir)/*.c))
 
 BIN = logmain
 
-SHAREDBIN = log.so
+SHAREDBIN = liblog.so
 
 all:$(SRC)
 	$(CC) $(SRC) $(CFLAGS) $(DEBUG) $(INC) $(LIBS) -o $(BIN)
