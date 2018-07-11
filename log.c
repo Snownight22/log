@@ -2,9 +2,9 @@
 //#include "log.h"
 #include "log_config.h"
 
-void log_init()
+void log_init(char *config_file)
 {
-    log_config_init(NULL);
+    log_config_init(config_file);
     log_core_init();
 }
 

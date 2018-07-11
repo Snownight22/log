@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-    log_init();
+    log_init(NULL);
 
     int i = 0;
     while(1)
