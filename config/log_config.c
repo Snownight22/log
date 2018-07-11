@@ -102,7 +102,7 @@ int log_config_parse_line(char* line, char* key, char* value)
         i++;
     j = 0;
     while ((!isblank(token[i])) && token[i] != 0 && token[i] != '\r' && token[i] != '\n')
-        value[j++] = token[i++];
+        value[j++] = tolower(token[i++]);
 
     return LOG_ERR_OK;
 }
