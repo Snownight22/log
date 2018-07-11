@@ -66,11 +66,11 @@ typedef struct list_head
 #define LIST_FOREACH(head, entry)    \
     for((entry) = (head)->first; NULL != (entry); (entry) = (entry)->next)
 
-#define LIST_FOREACH_NEXT(head, entry, next)                 \
-    for (                                                    \
-        (next) = (((entry) = head->first)?entry->next:NULL); \
-        NULL != (entry);                                     \
-        (entry) = next, (next) = ((next)?next->next:NULL)    \
+#define LIST_FOREACH_NEXT(head, entry, next)                     \
+    for (                                                        \
+        (next) = (((entry) = (head)->first)?(entry)->next:NULL); \
+        NULL != (entry);                                         \
+        (entry) = (next), (next) = ((next)?(next)->next:NULL)    \
         )
 
 

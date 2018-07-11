@@ -268,6 +268,15 @@ void log_core_destroy()
 
         SPIN_LOCK_DESTROY(&(corehandler->list_lock));
 
+        stFileNode *fileNode;
+        stListEntry *entry, *next;
+        LIST_FOREACH_NEXT(&(corehandler->file_list), entry, next)
+        {
+            LIST_DELETE(&(corehandler->file_list), entry);
+            fileNode = container_of(entry, stFileNode, entry);
+            free(fileNode);
+        }
+
         log_mem_destory();
         free(g_log_core_handler);
     }
