@@ -233,7 +233,11 @@ void log_core_init()
             return ;
         }
 
-        log_mem_init(LOG_UNIT_NODE_MAX);
+        int unitNum = log_config_unitCount_get();
+        if (0 == unitNum)
+            unitNum = LOG_UNIT_NODE_MAX;
+
+        log_mem_init((int)unitNum);
 
         stLogCore *corehandler = g_log_core_handler;
         LIST_INIT(&(corehandler->list[0]));

@@ -29,9 +29,11 @@ typedef struct logConfig
     unsigned char rolling_min;
     unsigned char rolling_weekly;
     unsigned char rolling_month;
+    int logUnitCount;
     char log_filename[CONFIG_FILE_LENGTH_MAX];
 }stLogConfig;
 
 void* log_config_handler_get();
+int log_config_unitCount_get();
 
 #endif

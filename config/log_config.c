@@ -19,6 +19,7 @@ stLogItem g_log_item[] =
     {"logRollingMin", "false", CONFIG_TYPE_BOOL},
     {"logRollingMonth", "false", CONFIG_TYPE_BOOL},
     {"logRollingWeekly", "false", CONFIG_TYPE_BOOL},
+    {"logUnitCount", "2048", CONFIG_TYPE_INT},
 };
 
 static int log_config_int_check(char *value)
@@ -151,6 +152,8 @@ void log_config_var_init()
         config_handler->rolling_weekly = 1;
     else
         config_handler->rolling_weekly = 0;
+
+    config_handler->logUnitCount = atoi(g_log_item[10].value);
 }
 
 int log_config_read()
@@ -218,6 +221,14 @@ void log_config_destory()
     }
 
     g_log_config_handler = NULL;
+}
+
+int log_config_unitCount_get()
+{
+    if (NULL != g_log_config_handler)
+        return g_log_config_handler->logUnitCount;
+
+    return 0;
 }
 
 void* log_config_handler_get()
