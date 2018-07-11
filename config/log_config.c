@@ -175,7 +175,8 @@ int log_config_read()
         {
             if (!strcmp(g_log_item[i].key, key))
             {
-                strcpy(g_log_item[i].value, value);
+                if (LOG_ERR_OK == log_config_type_check(value, g_log_item[i].type))
+                    strcpy(g_log_item[i].value, value);
                 break;
             }
         }
