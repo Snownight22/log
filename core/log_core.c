@@ -60,6 +60,9 @@ void log_core_printf(eLogLevel level, const char* format, ...)
     snprintf(fmt, LOG_CONTENT_LENGTH_MAX-1, "[%04d-%02d-%02d %02d:%02d:%02d:%03d]%s", nowTime->tm_year+1900, \
             nowTime->tm_mon+1, nowTime->tm_mday, nowTime->tm_hour, nowTime->tm_min, nowTime->tm_sec, tv.tv_usec/1000, format);
 
+    if (NULL == confighandler)
+        return ;
+
     if (level >= confighandler->log_level)
     {
         if (confighandler->log_console)
