@@ -200,14 +200,14 @@ void log_config_init(char* config_file)
             fprintf(stderr, "log handler malloc error!\n");
             return ;
         }
+
+        if (NULL == config_file)
+            snprintf(g_log_config_handler->fileName, CONFIG_FILE_LENGTH_MAX - 1, "log.ini");
+        else
+            snprintf(g_log_config_handler->fileName, CONFIG_FILE_LENGTH_MAX - 1, config_file);
+
+        log_config_read();
     }
-
-    if (NULL == config_file)
-        snprintf(g_log_config_handler->fileName, CONFIG_FILE_LENGTH_MAX - 1, "log.ini");
-    else
-        snprintf(g_log_config_handler->fileName, CONFIG_FILE_LENGTH_MAX - 1, config_file);
-
-    log_config_read();
 }
 
 void log_config_destory()
