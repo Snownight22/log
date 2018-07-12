@@ -279,6 +279,7 @@ void log_core_destroy()
 
         log_mem_destory();
         free(g_log_core_handler);
+        g_log_core_handler = NULL;
     }
 }
 
