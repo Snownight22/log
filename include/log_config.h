@@ -33,7 +33,11 @@ typedef struct logConfig
     char log_filename[CONFIG_FILE_LENGTH_MAX];
 }stLogConfig;
 
+
 void* log_config_handler_get();
 int log_config_unitCount_get();
+
+void log_config_init(char* config_file);
+void log_config_destory();
 
 #endif

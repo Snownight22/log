@@ -58,7 +58,7 @@ void log_core_printf(eLogLevel level, const char* format, ...)
     char fmt[LOG_CONTENT_LENGTH_MAX] = {0};
 
     snprintf(fmt, LOG_CONTENT_LENGTH_MAX-1, "[%04d-%02d-%02d %02d:%02d:%02d:%03d]%s", nowTime->tm_year+1900, \
-            nowTime->tm_mon+1, nowTime->tm_mday, nowTime->tm_hour, nowTime->tm_min, nowTime->tm_sec, tv.tv_usec/1000, format);
+            nowTime->tm_mon+1, nowTime->tm_mday, nowTime->tm_hour, nowTime->tm_min, nowTime->tm_sec, (int)(tv.tv_usec/1000), format);
 
     if (NULL == confighandler)
         return ;
@@ -120,12 +120,11 @@ FILE* log_core_rolling(FILE *fp, unsigned long logtime)
     stLogCore *handler = g_log_core_handler;
     stLogConfig *confighandler = log_config_handler_get();
     char filename[CONFIG_FILE_LENGTH_MAX] = {0};
-    char cmd[2*CONFIG_FILE_LENGTH_MAX] = {0};
 
     if (0 == handler->lastTime)
     {
         handler->lastTime = logtime;
-        struct tm *ntm = localtime(&logtime);
+        struct tm *ntm = localtime((time_t *)&logtime);
         memcpy((void*)&handler->lasttm, (void*)ntm, sizeof(struct tm));
         return fp;
     }
@@ -133,7 +132,7 @@ FILE* log_core_rolling(FILE *fp, unsigned long logtime)
     if (confighandler->rolling_filenums != 0)
     {
         struct tm *lasttm = &handler->lasttm;    //localtime(&handler->lastTime);
-        struct tm *logtm = localtime(&logtime);
+        struct tm *logtm = localtime((time_t *)&logtime);
         if (NULL != fp)
         {
             if (confighandler->rolling_day)
@@ -224,6 +223,7 @@ void* log_core_process(void *arg)
 
     if (NULL != fp)
         fclose(fp);
+	return NULL;
 }
 
 void log_core_init()

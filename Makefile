@@ -2,7 +2,7 @@ CC = gcc
 DEBUG = -g
 INC = -I./include/ 
 LIBS = -lpthread 
-CFLAGS = 
+CFLAGS = -std=c11 -Wall -Werror
 #-D__FILENAME__='"$(subst $(dir $<), ,$<)"'
 SHARED = -fpic -shared
 

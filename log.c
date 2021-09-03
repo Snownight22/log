@@ -1,6 +1,7 @@
 #include <stdio.h>
 //#include "log.h"
 #include "log_config.h"
+#include "log_core.h"
 
 void log_init(char *config_file)
 {
