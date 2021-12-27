@@ -11,7 +11,7 @@
 #include "log_mem.h"
 #include "log_core.h"
 
-stLogCore *g_log_core_handler;
+static stLogCore *g_log_core_handler;
 
 stLogUnit* log_core_node_get()
 {
